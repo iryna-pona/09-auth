@@ -1,17 +1,27 @@
-import axios from 'axios';
 import { cookies } from 'next/headers';
+import { api } from './api';
+import { User } from '@/types/user';
+
+export const getServerMe = async (): Promise<User> => {
+  const cookieStore = await cookies();
+
+  const { data } = await api.get('/auth/me', {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+
+  return data;
+};
 
 export const checkServerSession = async () => {
   const cookieStore = await cookies();
 
-  return axios.get(
-    'https://notehub-api.goit.study/auth/session',
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-      withCredentials: true,
-    }
-  );
+  return api.get('/auth/session', {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
 };
+
 
