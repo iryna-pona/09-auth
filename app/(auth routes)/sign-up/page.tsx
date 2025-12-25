@@ -2,55 +2,74 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { register, RegisterRequest } from '@/lib/api/clientApi';
-import { ApiError } from '@/app/api/api';
+import { register } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore';
+import { isAxiosError } from 'axios';
 import css from './SignUpPage.module.css';
 
-export default function SignUp() {
+export default function SignUpPage() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const setUser = useAuthStore(state => state.setUser);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email')?.toString() || '';
+    const password = formData.get('password')?.toString() || '';
 
     try {
-      const formData = new FormData(event.currentTarget);
-      const formValues = Object.fromEntries(formData) as RegisterRequest;
-      const res = await register(formValues);
-      if (res) {
-        router.push('/profile');
+      const user = await register({ email, password });
+      setUser(user);
+      router.push('/profile');
+    } catch (err) {
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.error || 'Registration failed');
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Invalid email or password');
+        setError('Registration failed');
       }
-    } catch (error) {
-      setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          'Oops... some error'
-      );
     }
   };
 
   return (
     <main className={css.mainContent}>
-      <h1>Sign up</h1>
-      <form onSubmit={handleSubmit} className={css.form}>
-        <label>
-          Username
-          <input type="text" name="userName" required />
-        </label>
-        <label>
-          Email
-          <input type="email" name="email" required />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" required />
-        </label>
-        <button type="submit">Register</button>
+      <h1 className={css.formTitle}>Sign up</h1>
+
+      <form className={css.form} onSubmit={handleSubmit}>
+        <div className={css.formGroup}>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className={css.input}
+            required
+          />
+        </div>
+
+        <div className={css.formGroup}>
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            className={css.input}
+            required
+          />
+        </div>
+
+        <div className={css.actions}>
+          <button type="submit" className={css.submitButton}>
+            Register
+          </button>
+        </div>
+
+        {error && <p className={css.error}>{error}</p>}
       </form>
-      {error && <p className={css.error}>{error}</p>}
     </main>
   );
 }
+
