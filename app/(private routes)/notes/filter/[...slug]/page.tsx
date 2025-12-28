@@ -2,6 +2,8 @@ import { HydrationBoundary, dehydrate, QueryClient } from '@tanstack/react-query
 import NotesClient from '@/app/(private routes)/notes/filter/[...slug]/Notes.client';
 import { fetchNotes } from '@/lib/api/clientApi';
 import type { FetchNotesParams } from '@/lib/api/clientApi';
+import { redirect } from 'next/navigation';
+import { checkServerSession } from '@/lib/api/serverApi';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -35,6 +37,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NotesPage({ params }: Props) {
+    let sessionData;
+  try {
+    sessionData = await checkServerSession();
+  } catch (err) {
+    console.error('Failed to check session', err);
+    redirect('/sign-in');
+  }
+
+  const user = sessionData?.data;
+
+  if (!user?.accessToken) {
+    redirect('/sign-in');
+  }
   const { slug } = await params;
 
   const queryClient = new QueryClient();

@@ -15,23 +15,31 @@ export interface LoginRequest {
 }
 
 export async function register(data: RegisterRequest): Promise<User> {
-  const res = await api.post<User>('/auth/register', data);
+  const res = await api.post<User>('/api/auth/register', data, {
+    withCredentials: true
+  });
   return res.data;
 }
 
 export async function login(data: LoginRequest): Promise<User> {
-  const res = await api.post<User>('/auth/login', data);
+  const res = await api.post<User>('/api/auth/login', data, {
+    withCredentials: true,
+  });
   return res.data;
 }
 
 export async function logout(): Promise<void> {
-  await api.post('/auth/logout');
+  await api.post('/api/auth/logout', {}, {
+    withCredentials: true
+  });
 }
 
 export async function checkSession(): Promise<User | null> {
   try {
-    const res = await api.get<User>('/auth/session');
-    return res.data;
+    const res = await api.get<User>('/api/auth/session', {
+      withCredentials: true
+    });
+    return res.data ?? null;
   } catch {
     return null;
   }
@@ -39,14 +47,22 @@ export async function checkSession(): Promise<User | null> {
 
 /* User */
 
-export async function getMe(): Promise<User> {
-  const res = await api.get<User>('/users/me');
-  return res.data;
+export async function getMe(): Promise<User | null> {
+  try {
+    const res = await api.get<User>('/api/users/me', { withCredentials: true });
+    return res.data ?? null;
+  } catch {
+    return null;
+  }
 }
 
-export async function updateMe(data: Partial<User>): Promise<User> {
-  const res = await api.patch<User>('/users/me', data);
-  return res.data;
+export async function updateMe(data: Partial<User>): Promise<User | null> {
+  try {
+    const res = await api.patch<User>('/api/users/me', data, { withCredentials: true });
+    return res.data ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /* Notes */
@@ -71,21 +87,40 @@ export interface CreateNoteParams {
 }
 
 export async function fetchNotes(params: FetchNotesParams): Promise<FetchNotesResponse> {
-  const res = await api.get<FetchNotesResponse>('/notes', { params });
-  return res.data;
+  try {
+    const res = await api.get<FetchNotesResponse>('/api/notes', {
+      params,
+      withCredentials: true,
+    });
+    return res.data ?? { notes: [], totalPages: 0 };
+  } catch {
+    return { notes: [], totalPages: 0 };
+  }
 }
 
-export async function fetchNoteById(id: string): Promise<Note> {
-  const res = await api.get<Note>(`/notes/${id}`);
-  return res.data;
+export async function fetchNoteById(id: string): Promise<Note | null> {
+  try {
+    const res = await api.get<Note>(`/api/notes/${id}`, { withCredentials: true });
+    return res.data ?? null;
+  } catch {
+    return null;
+  }
 }
 
-export async function createNote(data: CreateNoteParams): Promise<Note> {
-  const res = await api.post<Note>('/notes', data);
-  return res.data;
+export async function createNote(data: CreateNoteParams): Promise<Note | null> {
+  try {
+    const res = await api.post<Note>('/api/notes', data, { withCredentials: true });
+    return res.data ?? null;
+  } catch {
+    return null;
+  }
 }
 
-export async function deleteNote(id: string): Promise<Note> {
-  const res = await api.delete<Note>(`/notes/${id}`);
-  return res.data;
+export async function deleteNote(id: string): Promise<Note | null> {
+  try {
+    const res = await api.delete<Note>(`/api/notes/${id}`, { withCredentials: true });
+    return res.data ?? null;
+  } catch {
+    return null;
+  }
 }
