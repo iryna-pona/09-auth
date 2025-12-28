@@ -4,7 +4,6 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
 import { checkSession } from '@/lib/api/clientApi';
-import css from './AuthProvider.module.css';
 
 type Props = {
   children: ReactNode;
@@ -45,7 +44,11 @@ export default function AuthProvider({ children }: Props) {
   }, [pathname, router, setUser, clearIsAuthenticated]);
 
   if (loading) {
-    return <div className={css.loader}>Loading...</div>;
+    return <div style={{
+        textAlign: 'center',
+        padding: '2rem',
+        fontSize: '1.2rem'
+      }}>Loading...</div>;
   }
 
   return <>{children}</>;

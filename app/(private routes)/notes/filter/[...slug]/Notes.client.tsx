@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
-import { fetchNotes } from '@/lib/api';
-import type { FetchNotesParams, FetchNotesResponse } from '@/lib/api';
+import { fetchNotes } from '@/lib/api/clientApi';
+import type { FetchNotesParams, FetchNotesResponse } from '@/lib/api/clientApi';
 import { keepPreviousData } from '@tanstack/react-query';
 import Link from 'next/link';
 import NoteList from '@/components/NoteList/NoteList';
