@@ -14,11 +14,11 @@ export default function AuthNavigation() {
   const handleLogout = async () => {
     try {
       await logout();
+    } catch (error) {
+      console.error('Logout failed', error);
+    } finally {
       clearIsAuthenticated();
-      router.replace('/sign-in');
-      router.refresh();
-    } catch (err) {
-      console.error('Logout failed', err);
+      router.push('/sign-in');
     }
   };
 

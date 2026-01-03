@@ -14,6 +14,10 @@ export interface LoginRequest {
   password: string;
 }
 
+type CheckSessionRequest = {
+  success: boolean;
+};
+
 export async function register(data: RegisterRequest): Promise<User> {
   const res = await api.post<User>('/auth/register', data, {
     withCredentials: true
@@ -34,16 +38,11 @@ export async function logout(): Promise<void> {
   });
 }
 
-export async function checkSession(): Promise<User | null> {
-  try {
-    const res = await api.get<User>('/auth/session', {
-      withCredentials: true
-    });
-    return res.data ?? null;
-  } catch {
-    return null;
-  }
-}
+export async function checkSession(): Promise<boolean> {
+  const res = await api.get<CheckSessionRequest>('/auth/session');
+  return res.data.success;
+};
+
 
 /* User */
 
