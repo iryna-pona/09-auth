@@ -18,8 +18,7 @@ React | Next.js | JavaScript (ES6+) | CSS3 | REST API | Cookies
 ## 🚀 Live Demo
 [NoteHub Live Demo](https://09-auth-two-hazel.vercel.app)
 
-## 🔗 Backend
-Backend is in progress  
+## 🔗 Backend  
 [Backend Repository](https://github.com/iryna-pona/nodejs-hw)
 
 ## 👩‍💻 Role
